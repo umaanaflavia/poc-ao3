@@ -1,10 +1,16 @@
 import pandas as pd
+import time
+
+start = time.time()
 
 # Read the CSV file
-df = pd.read_csv('C:/Users/umaanaflavia/OneDrive/Documentos/poc-ao3/Coletas/1001-100000/ptPT.csv')
+df = pd.read_csv('Coletas/1001-100000/sv.csv')
 
 # Initialize a dictionary to store work_ids and their associated freeforms
 work_freeforms = {}
+
+# Initialize the correlation matrix with zeros
+correlation_matrix = pd.DataFrame(0, index=work_freeforms.keys(), columns=work_freeforms.keys())
 
 # Iterate over each row in the DataFrame
 for index, row in df.iterrows():
@@ -13,26 +19,27 @@ for index, row in df.iterrows():
     
     # Convert the freeforms string to a list
     freeforms = eval(freeforms)
+
+    # Iterate over other rows to check for shared freeforms
+    for _, other_row in df.iloc[index+1:].iterrows():
+        other_work_id = other_row['work_id']
+        other_freeforms = other_row['freeforms']
+        other_freeforms = eval(other_freeforms)
+        
+        # Calculate the number of common freeforms
+        common_freeforms = len(set(freeforms) & set(other_freeforms))    
     
-    # Store the work_id and its associated freeforms in the dictionary
-    work_freeforms[work_id] = freeforms
-print(work_freeforms)
-
-# Initialize the correlation matrix with zeros
-correlation_matrix = pd.DataFrame(0, index=work_freeforms.keys(), columns=work_freeforms.keys())
-
-# Iterate over each pair of work_ids
-for work_id1, freeforms1 in work_freeforms.items():
-    for work_id2, freeforms2 in work_freeforms.items():
-        # Check if the two works share any freeforms
-        shared_freeforms = set(freeforms1) & set(freeforms2)
-        if work_id1 != work_id2:
+        if work_id != other_work_id:
             # If they share at least one freeform, increase the corresponding cell in the matrix by 1
-            correlation_matrix.at[work_id1, work_id2] = len(shared_freeforms)
-        print(work_id1, work_id2)
+            correlation_matrix.at[work_id, other_work_id] = common_freeforms
+
+        print(work_id, other_work_id)
 
 # Save the correlation matrix as a CSV file
-correlation_matrix.to_csv('correlation_matrix.csv', index_label='work_id')
+correlation_matrix.to_csv('correlation_matrix_sv.csv', index_label='work_id')
+
+end = time.time()
 
 # Display the correlation matrix
 print(correlation_matrix)
+print(end - start)

@@ -5,7 +5,7 @@ import time
 start = time.time()
 
 # Read the CSV file
-df = pd.read_csv('Coletas/1001-100000/ptBR.csv')
+df = pd.read_csv('Coletas/1001-100000/ko.csv')
 
 # Create a graph
 G = nx.Graph()
@@ -31,14 +31,14 @@ for index, row in df.iterrows():
         common_freeforms = len(set(freeforms) & set(other_freeforms))
         
         # Add an edge if there are common freeforms
-        if common_freeforms > 0:
+        if work_id != other_work_id and common_freeforms > 0:
             G.add_edge(work_id, other_work_id, weight=common_freeforms)
     
     end_row = time.time()
     print(index + 1, '/', len(df), ' - ', end_row - start_row)
 
 # Export the graph to a GraphML file
-nx.write_graphml(G, "ptBR.graphml")
+nx.write_graphml(G, "ko.graphml")
 end = time.time()
 
 print(G)
