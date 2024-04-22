@@ -43,7 +43,7 @@ for index in range(len(link_list)):
     # Create and open a CSV file for writing information
     with open(arquivos[index], 'w', newline='', encoding='utf-8') as csv_file:
         csv_writer = csv.writer(csv_file)
-        headers = ['work_id',
+        headers = ['id',
                    'title',
                    'authors',
                    'fandoms',
